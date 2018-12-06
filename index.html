@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Trivia Game</title>
+</head>
+
+
+<body>
+
+    <h1>Trivia Game</h1>
+
+    <button id="startButton">Game Start</button>
+
+    <div class="container"></div>
+
+
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+
+    <!-- Script -->
+    <script type="text/javascript">
+
+        // Every multiple choice question is an array with question at index 0, followed by the four options, then the answer is in index 5
+        var quest1 = ["i++ is equivalent to", "i = i + 1", "i = i - 1", "i = i + i", "i = 1 + i", "i = i + 1"];
+        var quest2 = ["Math.random() generates a random number that is", "between 0 and 1, not including 1", "between -1 and 1", "between 0 and 10", "between 0-1, including 1", "between 0 and 1, not including 1"]
+
+        // Adding a ordered list element, then appending it to the container
+        var listElement = document.createElement("ol");
+        $(".container").append(listElement);
+
+        // Appending the question to the list
+        listElement.append(quest1[0]);
+
+        // Generating list item tags for each of the choices, excluding the answer
+        for (var i = 1; i < quest1.length - 1; i++) {
+            var listItem = document.createElement("li");
+            listItem.innerHTML = quest1[i];
+            listElement.append(listItem);
+        }
+
+        
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>
