@@ -4,45 +4,113 @@
 <head>
     <meta charset="UTF-8">
     <title>Trivia Game</title>
+    <!-- Bootstrap File -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <!-- My own CSS File-->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery.js"></script>
 </head>
 
 
 <body>
 
-    <h1>Trivia Game</h1>
+    <div class="jumbotron jumbotron-fluid text-center">
+        <h1>Trivia Game</h1>
+        <h2 id="timer"></h2>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-light btn-block" id="startButton">Game Start</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="questionDisplay"></div>
+                <div id="optionDisplay"></div>
+            </div>
+        </div>
+    </div>
 
-    <button id="startButton">Game Start</button>
-
-    <div class="container"></div>
-
-
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery.js"></script>
 
     <!-- Script -->
     <script type="text/javascript">
 
-        // Every multiple choice question is an array with question at index 0, followed by the four options, then the answer is in index 5
-        var quest1 = ["i++ is equivalent to", "i = i + 1", "i = i - 1", "i = i + i", "i = 1 + i", "i = i + 1"];
-        var quest2 = ["Math.random() generates a random number that is", "between 0 and 1, not including 1", "between -1 and 1", "between 0 and 10", "between 0-1, including 1", "between 0 and 1, not including 1"]
+        // Each multiple choice question is stored as a object in the array 'questions', with all the possible choices as 'options'
+        // Answer to each question is stored in the 'answer' property, gif image url is in 'gif'
+        var multipleChoiceQuiz = [
+            {
+                question: "What is i++ equivalent to?",
+                options: ["i = i + 1", "i = i - 1", "i = i + i", "i = 1 + 1"],
+                answer: "i = i + 1",
+                gif: "https://giphy.com/gifs/26BGIqWh2R1fi6JDa/html5"
+            },
+            {
+                question: "What is the range for the random number that Math.random() generates?",
+                options: ["between 0 and 1, including 1", "between -1 and 1", "between 0 and 10", "between 0 and 1, not including 1"],
+                answer: "between 0 and 1, not including 1",
+                gif: "https://giphy.com/gifs/vzO0Vc8b2VBLi/html5"
+            },
+            {
+                question: "What is jQuery?",
+                options: ["JavaScript library", "JavaScript convention", "JavaScript parameter", "Javascript friendo"],
+                answer: "JavaScript library",
+                gif: "https://giphy.com/gifs/3ov9jNziFTMfzSumAw/html5"
+            },
+            {
+                question: "Which is a correct example of camel casing?",
+                options: ["IDONOTKNOWWHATTODO", "Idonotknowwhattodo", "iDoNotKnowWhatToDo", "IDoNotKnowWhatToDo"],
+                answer: "iDoNotKnowWhatToDo",
+                gif: "https://giphy.com/gifs/349qKnoIBHK1i/html5"
+            }
 
-        // Adding a ordered list element, then appending it to the container
-        var listElement = document.createElement("ol");
-        $(".container").append(listElement);
+        ];
 
-        // Appending the question to the list
-        listElement.append(quest1[0]);
+        // variables for correct, wrong and unanswered question count
+        var numCorrect = 0;
+        var numWrong = 0;
+        var numUnanswered = 0;
+        var number = 30;
 
-        // Generating list item tags for each of the choices, excluding the answer
-        for (var i = 1; i < quest1.length - 1; i++) {
-            var listItem = document.createElement("li");
-            listItem.innerHTML = quest1[i];
-            listElement.append(listItem);
+        // function for counting down 30 seconds while the question displays
+        function countdown() {
+            number--;
+            console.log(number);
+            $('#timer').text(number + " seconds remaining");
+            if (number < 0) { //time ran out
+                stop();
+            }
         }
 
-        
+        function stop() {
 
+        }
+
+        // Formats each question object in the multiple choice quiz array for displaying
+        $.each(multipleChoiceQuiz, function (i, val) {
+
+            // Create a empty div 
+            var questionDiv = $("<div>");
+
+            // Appending the question
+            questionDiv.append(multipleChoiceQuiz[i].question + "<br>");
+
+            // taking out the array of options from the object and storing as variable optionArray
+            var optionArray = multipleChoiceQuiz[i].options;
+
+            // Generating buttons for each of the options
+            for (var j = 0; j < optionArray.length; j++) {
+                var button = document.createElement("button");
+                button.value = optionArray[j]; // Option is stored as a value attribute in button
+                button.innerHTML = optionArray[j]; // Option shows up as text on the button
+                questionDiv.append(button);
+                questionDiv.append("<br>"); // moves next button on new line
+            }
+            $("#questionDisplay").append(questionDiv);
+
+            setInterval(countdown, 1000)
+        });
 
 
 
