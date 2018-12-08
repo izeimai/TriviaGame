@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12 text-center">
                 <div id="questionDisplay"></div>
             </div>
         </div>
@@ -87,18 +87,19 @@
             if (!clockRunning) {
                 intervalId = setInterval(countdown, 1000); // run countdown function every second
             }
-            newQuestion();
+            newQuestion(); // loads the first question
         }
 
-        // function for counting down 30 seconds while the question displays
+        // function for counting down seconds during the question and answer display
         function countdown() {
             number--;
-            if (number > 5) { // 30 second
+            if (number > 5) { // 5 second is alloted time of the gif
+                // what is actually displayed to the user is the time alloted minus 5 seconds
                 $('#timer').text((number - 5) + " seconds remaining");
 
                 // event listener for an option getting clicked
                 $("button").unbind().click(function () {
-                    number = 5;
+                    number = 5; // immediately change counter to 5 seconds (move to gif image)
                     var chosen = $(this).attr('value');
                     if (chosen === multipleChoiceQuiz[i].answer) { // correct answer 
                         numCorrect++;
@@ -116,21 +117,15 @@
                 playGif();
             } else if (number === 0) { // next question
                 reset();
-            } else if (i === multipleChoiceQuiz.length) {
-                stopGame();
             }
-        }
-
-        function nextQuestion() {
-            $("#questionDisplay").html("");
-            i++;
-            newQuestion();
         }
 
         function reset() {
             number = 36;
             clockRunning = true;
-            nextQuestion();
+            $("#questionDisplay").html("");
+            i++;
+            newQuestion();
         }
 
         function playGif() {
@@ -139,10 +134,9 @@
             var image = $("<img>");
             image.attr("src", multipleChoiceQuiz[i].gif);
             $("#questionDisplay").append(image);
-
         }
 
-        function stopGame() {
+        function endGame() {
             $("#questionDisplay").html("");
             clearInterval(intervalId);
             $("#timer").hide();
@@ -150,40 +144,47 @@
             $("#questionDisplay").append("<p>Incorrect Answers: " + numWrong + "</p>");
             $("#questionDisplay").append("<p>Unanswered: " + numUnanswered + "</p>");
             var restartGameButton = $("<button>");
-            $("questionDisplay").append(restartGameButton);
-
-            // set up a newGame
+            restartGameButton.text("Restart Game");
+            restartGameButton.attr(onclick, "newGame();");
+            $("#questionDisplay").append(restartGameButton);
         }
 
         function newGame() {
             numCorrect = 0;
             numWrong = 0;
             numUnanswered = 0;
+            i = 0;
         }
 
         // Formats each question object in the multiple choice quiz array for displaying
         function newQuestion() {
 
-            // Create a empty div 
-            var questionDiv = $("<div>");
+            // Conditional when ending the game
+            if (numCorrect + numWrong + numUnanswered === multipleChoiceQuiz.length) {
+                endGame();
+            } else {
 
-            // Appending the question
-            questionDiv.append(multipleChoiceQuiz[i].question + "<br>");
+                // Create a empty div 
+                var questionDiv = $("<div>");
 
-            // taking out the array of options from the object and storing as variable optionArray
-            var optionArray = multipleChoiceQuiz[i].options;
+                // Appending the question
+                questionDiv.append(multipleChoiceQuiz[i].question + "<br>");
 
-            // Generating buttons for each of the options
-            for (var j = 0; j < optionArray.length; j++) {
-                var button = document.createElement("button");
-                button.value = optionArray[j]; // Option is stored as a value attribute in button
-                button.innerHTML = optionArray[j]; // Option shows up as text on the button
-                questionDiv.append(button);
-                questionDiv.append("<br>"); // moves next button on new line
-            }
+                // taking out the array of options from the object and storing as variable optionArray
+                var optionArray = multipleChoiceQuiz[i].options;
 
-            // add the question to the div
-            $("#questionDisplay").append(questionDiv);
+                // Generating buttons for each of the options
+                for (var j = 0; j < optionArray.length; j++) {
+                    var button = document.createElement("button");
+                    button.value = optionArray[j]; // Option is stored as a value attribute in button
+                    button.innerHTML = optionArray[j]; // Option shows up as text on the button
+                    questionDiv.append(button);
+                    questionDiv.append("<br>"); // moves next button on new line
+                }
+
+                // add the question to the div
+                $("#questionDisplay").append(questionDiv);
+            } // close else
 
         } // close function newQuestion
 
