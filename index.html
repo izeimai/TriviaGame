@@ -17,18 +17,17 @@
 
     <div class="jumbotron jumbotron-fluid text-center">
         <h1>Trivia Game</h1>
-        <h2 id="timer"></h2>
+        <h2 id="timer"> </h2>
     </div>
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <button type="button" class="btn btn-light btn-block" id="startButton">Game Start</button>
+                <button type="button" class="btn btn-light btn-block" onclick="start();" id="startButton">Game Start</button>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <div id="questionDisplay"></div>
-                <div id="optionDisplay"></div>
             </div>
         </div>
     </div>
@@ -44,25 +43,31 @@
                 question: "What is i++ equivalent to?",
                 options: ["i = i + 1", "i = i - 1", "i = i + i", "i = 1 + 1"],
                 answer: "i = i + 1",
-                gif: "https://giphy.com/gifs/26BGIqWh2R1fi6JDa/html5"
+                gif: "https://media.giphy.com/media/26BGIqWh2R1fi6JDa/giphy.gif"
             },
             {
                 question: "What is the range for the random number that Math.random() generates?",
                 options: ["between 0 and 1, including 1", "between -1 and 1", "between 0 and 10", "between 0 and 1, not including 1"],
                 answer: "between 0 and 1, not including 1",
-                gif: "https://giphy.com/gifs/vzO0Vc8b2VBLi/html5"
+                gif: "https://media.giphy.com/media/vzO0Vc8b2VBLi/giphy.gif"
+            },
+            {
+                question: "What game theme did Quincy say would earn extra points for this assignment?",
+                options: ["Pokeman", "Chinpokomon", "Pokemon", "Pokebowl"],
+                answer: "Pokemon",
+                gif: "https://media.giphy.com/media/3ov9jNziFTMfzSumAw/giphy.gif"
             },
             {
                 question: "What is jQuery?",
                 options: ["JavaScript library", "JavaScript convention", "JavaScript parameter", "Javascript friendo"],
                 answer: "JavaScript library",
-                gif: "https://giphy.com/gifs/3ov9jNziFTMfzSumAw/html5"
+                gif: "https://media.giphy.com/media/349qKnoIBHK1i/giphy.gif"
             },
             {
                 question: "Which is a correct example of camel casing?",
                 options: ["IDONOTKNOWWHATTODO", "Idonotknowwhattodo", "iDoNotKnowWhatToDo", "IDoNotKnowWhatToDo"],
                 answer: "iDoNotKnowWhatToDo",
-                gif: "https://giphy.com/gifs/349qKnoIBHK1i/html5"
+                gif: "https://media.giphy.com/media/YQitE4YNQNahy/giphy.gif"
             }
 
         ];
@@ -71,24 +76,93 @@
         var numCorrect = 0;
         var numWrong = 0;
         var numUnanswered = 0;
-        var number = 30;
+        var number = 36  // 36 seconds = 30 seconds displaying question + 5 seconds displaying gif
+        var intervalId;
+        var clockRunning = false; // slows down so not all questions at once
+        var i = 0; //first question
+
+        // Function for when the start button is pressed 
+        function start() {
+            $("#startButton").hide(); // Hide the start button
+            if (!clockRunning) {
+                intervalId = setInterval(countdown, 1000); // run countdown function every second
+            }
+            newQuestion();
+        }
 
         // function for counting down 30 seconds while the question displays
         function countdown() {
             number--;
-            console.log(number);
-            $('#timer').text(number + " seconds remaining");
-            if (number < 0) { //time ran out
-                stop();
+            if (number > 5) { // 30 second
+                $('#timer').text((number - 5) + " seconds remaining");
+
+                // event listener for an option getting clicked
+                $("button").unbind().click(function () {
+                    number = 5;
+                    var chosen = $(this).attr('value');
+                    if (chosen === multipleChoiceQuiz[i].answer) { // correct answer 
+                        numCorrect++;
+                        playGif();
+                        $("#questionDisplay").prepend("<p> Correct! </p>");
+                    } else if (chosen !== multipleChoiceQuiz[i].answer) { // wrong answer
+                        numWrong++;
+                        playGif();
+                        $("#questionDisplay").prepend("<p> The correct answer was " + multipleChoiceQuiz[i].answer + "</p>");
+                    }
+                });
+            } else if (number === 5) { // time ran out, display gif
+                $('#timer').html("");
+                numUnanswered++; // you reached the time limit so the question was unanswered
+                playGif();
+            } else if (number === 0) { // next question
+                reset();
+            } else if (i === multipleChoiceQuiz.length) {
+                stopGame();
             }
         }
 
-        function stop() {
+        function nextQuestion() {
+            $("#questionDisplay").html("");
+            i++;
+            newQuestion();
+        }
+
+        function reset() {
+            number = 36;
+            clockRunning = true;
+            nextQuestion();
+        }
+
+        function playGif() {
+            $("#questionDisplay").html("");
+            $("#timer").html("");
+            var image = $("<img>");
+            image.attr("src", multipleChoiceQuiz[i].gif);
+            $("#questionDisplay").append(image);
 
         }
 
+        function stopGame() {
+            $("#questionDisplay").html("");
+            clearInterval(intervalId);
+            $("#timer").hide();
+            $("#questionDisplay").append("<p>Correct Answers: " + numCorrect + "</p>");
+            $("#questionDisplay").append("<p>Incorrect Answers: " + numWrong + "</p>");
+            $("#questionDisplay").append("<p>Unanswered: " + numUnanswered + "</p>");
+            var restartGameButton = $("<button>");
+            $("questionDisplay").append(restartGameButton);
+
+            // set up a newGame
+        }
+
+        function newGame() {
+            numCorrect = 0;
+            numWrong = 0;
+            numUnanswered = 0;
+        }
+
         // Formats each question object in the multiple choice quiz array for displaying
-        $.each(multipleChoiceQuiz, function (i, val) {
+        function newQuestion() {
 
             // Create a empty div 
             var questionDiv = $("<div>");
@@ -107,10 +181,12 @@
                 questionDiv.append(button);
                 questionDiv.append("<br>"); // moves next button on new line
             }
+
+            // add the question to the div
             $("#questionDisplay").append(questionDiv);
 
-            setInterval(countdown, 1000)
-        });
+        } // close function newQuestion
+
 
 
 
