@@ -1,3 +1,7 @@
-image {
-    width: 300px
+body {
+    background-image: url(../images/swirl_pattern.png);
+}
+
+.card {
+    height : 5rem;
 }

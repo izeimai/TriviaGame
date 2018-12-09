@@ -20,18 +20,12 @@
 
     </div>
     <div class="container">
-
-        <div class="row">
-            <div class="col-md-12">
-                <button type="button" class="btn btn-light btn-block" onclick="start();" id="startButton">Game Start</button>
-            </div>
-        </div>
         <div class="card text-center">
             <div class="card-body">
+                <button type="button" class="btn btn-light btn-block" onclick="start();" id="startButton">Game Start</button>
                 <h5 class="card-title" id="timer"></h5>
             </div>
         </div>
-
         <div class="row">
             <div class="col-md-12 text-center">
                 <div id="questionDisplay"></div>
@@ -112,11 +106,11 @@
                     if (chosen === multipleChoiceQuiz[i].answer) { // correct answer 
                         numCorrect++;
                         playGif();
-                        $("#questionDisplay").prepend("<p> Correct! </p>");
+                        $("#questionDisplay").prepend("<h2> Correct! </h2>");
                     } else if (chosen !== multipleChoiceQuiz[i].answer) { // wrong answer
                         numWrong++;
                         playGif();
-                        $("#questionDisplay").prepend("<p> The correct answer was " + multipleChoiceQuiz[i].answer + "</p>");
+                        $("#questionDisplay").prepend("<h2> The correct answer was " + multipleChoiceQuiz[i].answer + "</h2>");
                     }
                 });
             } else if (number === 5) { // time ran out, display gif
@@ -148,13 +142,14 @@
 
         // function for when you reach the end of the quiz
         function endGame() {
+            clockRunning = true;
             $("#questionDisplay").html("");
             clearInterval(intervalId);
             $("#timer").hide();
             // Displays the results from the quiz
-            $("#questionDisplay").append("<p>Correct Answers: " + numCorrect + "</p>");
-            $("#questionDisplay").append("<p>Incorrect Answers: " + numWrong + "</p>");
-            $("#questionDisplay").append("<p>Unanswered: " + numUnanswered + "</p>");
+            $("#questionDisplay").append("<h3>Correct Answers: " + numCorrect + "</h3>");
+            $("#questionDisplay").append("<h3>Incorrect Answers: " + numWrong + "</h3>");
+            $("#questionDisplay").append("<h3>Unanswered: " + numUnanswered + "</h3>");
             // adds a restart button to play the game again
             var restartGameButton = $("<button>");
             restartGameButton.text("Restart Game");
@@ -165,18 +160,18 @@
         // function to clear to starting values of the counter variables
         function newGame() {
             $("#questionDisplay").html("");
+            $("#timer").show();
             numCorrect = 0;
             numWrong = 0;
             numUnanswered = 0;
             number = 35;
             i = 0;
-            clockRunning = true;
+            clockRunning = false;
             start();
         }
 
-        // Formats each question object in the multiple choice quiz array for displaying
+        // This function formats each question object in the multiple choice quiz array for displaying
         function newQuestion() {
-
             // Conditional when ending the game
             if (numCorrect + numWrong + numUnanswered === multipleChoiceQuiz.length) {
                 endGame();
@@ -185,7 +180,7 @@
                 var questionDiv = $("<div>");
 
                 // Appending the question
-                questionDiv.append(multipleChoiceQuiz[i].question + "<br>");
+                questionDiv.append("<h2>" + multipleChoiceQuiz[i].question + "</h2><br>");
 
                 // taking out the array of options from the object and storing as variable optionArray
                 var optionArray = multipleChoiceQuiz[i].options;
@@ -195,8 +190,9 @@
                     var button = document.createElement("button");
                     button.value = optionArray[j]; // Option is stored as a value attribute in button
                     button.innerHTML = optionArray[j]; // Option shows up as text on the button
-                    questionDiv.append(button);
-                    questionDiv.append("<br>"); // moves next button on new line
+                    button.className = "btn btn-secondary"; // Button looks good with Bootstrap
+                    questionDiv.append(button); // Add button to the div
+                    questionDiv.append("<br><br>"); // Inserts break between buttons for spacing
                 }
 
                 // add the question to the div
