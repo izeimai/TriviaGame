@@ -17,14 +17,21 @@
 
     <div class="jumbotron jumbotron-fluid text-center">
         <h1>Trivia Game</h1>
-        <h2 id="timer"> </h2>
+
     </div>
     <div class="container">
+
         <div class="row">
             <div class="col-md-12">
                 <button type="button" class="btn btn-light btn-block" onclick="start();" id="startButton">Game Start</button>
             </div>
         </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title" id="timer"></h5>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-12 text-center">
                 <div id="questionDisplay"></div>
@@ -35,6 +42,7 @@
 
     <!-- Script -->
     <script type="text/javascript">
+
 
         // Each multiple choice question is stored as a object in the array 'questions', with all the possible choices as 'options'
         // Answer to each question is stored in the 'answer' property, gif image url is in 'gif'
@@ -67,7 +75,7 @@
                 question: "Which is a correct example of camel casing?",
                 options: ["IDONOTKNOWWHATTODO", "Idonotknowwhattodo", "iDoNotKnowWhatToDo", "IDoNotKnowWhatToDo"],
                 answer: "iDoNotKnowWhatToDo",
-                gif: "https://media.giphy.com/media/YQitE4YNQNahy/giphy.gif"
+                gif: "https://media.giphy.com/media/pOKrXLf9N5g76/giphy.gif"
             }
 
         ];
@@ -76,18 +84,18 @@
         var numCorrect = 0;
         var numWrong = 0;
         var numUnanswered = 0;
-        var number = 36  // 36 seconds = 30 seconds displaying question + 5 seconds displaying gif
+        var number = 35  // 35 seconds = 30 seconds displaying question + 5 seconds displaying gif
         var intervalId;
         var clockRunning = false; // slows down so not all questions at once
         var i = 0; //first question
 
         // Function for when the start button is pressed 
         function start() {
+            newQuestion(); // loads the first question
             $("#startButton").hide(); // Hide the start button
             if (!clockRunning) {
                 intervalId = setInterval(countdown, 1000); // run countdown function every second
             }
-            newQuestion(); // loads the first question
         }
 
         // function for counting down seconds during the question and answer display
@@ -99,7 +107,7 @@
 
                 // event listener for an option getting clicked
                 $("button").unbind().click(function () {
-                    number = 5; // immediately change counter to 5 seconds (move to gif image)
+                    number = 5; // immediately change counter to 4 seconds (move to gif image)
                     var chosen = $(this).attr('value');
                     if (chosen === multipleChoiceQuiz[i].answer) { // correct answer 
                         numCorrect++;
@@ -120,14 +128,16 @@
             }
         }
 
+        // function that resets the timer
         function reset() {
             number = 36;
-            clockRunning = true;
+            //clockRunning = true;
             $("#questionDisplay").html("");
             i++;
             newQuestion();
         }
 
+        //
         function playGif() {
             $("#questionDisplay").html("");
             $("#timer").html("");
@@ -136,24 +146,32 @@
             $("#questionDisplay").append(image);
         }
 
+        // function for when you reach the end of the quiz
         function endGame() {
             $("#questionDisplay").html("");
             clearInterval(intervalId);
             $("#timer").hide();
+            // Displays the results from the quiz
             $("#questionDisplay").append("<p>Correct Answers: " + numCorrect + "</p>");
             $("#questionDisplay").append("<p>Incorrect Answers: " + numWrong + "</p>");
             $("#questionDisplay").append("<p>Unanswered: " + numUnanswered + "</p>");
+            // adds a restart button to play the game again
             var restartGameButton = $("<button>");
             restartGameButton.text("Restart Game");
-            restartGameButton.attr(onclick, "newGame();");
+            restartGameButton.attr("onclick", "newGame();");
             $("#questionDisplay").append(restartGameButton);
         }
 
+        // function to clear to starting values of the counter variables
         function newGame() {
+            $("#questionDisplay").html("");
             numCorrect = 0;
             numWrong = 0;
             numUnanswered = 0;
+            number = 35;
             i = 0;
+            clockRunning = true;
+            start();
         }
 
         // Formats each question object in the multiple choice quiz array for displaying
@@ -163,7 +181,6 @@
             if (numCorrect + numWrong + numUnanswered === multipleChoiceQuiz.length) {
                 endGame();
             } else {
-
                 // Create a empty div 
                 var questionDiv = $("<div>");
 
@@ -187,10 +204,6 @@
             } // close else
 
         } // close function newQuestion
-
-
-
-
 
     </script>
 
